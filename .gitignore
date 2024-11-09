@@ -1,0 +1,13 @@
+### Gradle ###
+.gradle/
+build/
+
+### IntelliJ IDEA ###
+.idea/
+out/
+
+### Kotlin ###
+.kotlin
+
+### Mac OS ###
+.DS_Store
