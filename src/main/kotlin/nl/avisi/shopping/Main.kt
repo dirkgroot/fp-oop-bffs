@@ -41,15 +41,15 @@ fun main() {
         Err("TODO")
 
     val item: Status<ShoppingCartItem> =
-        when (productName) {
+        when (provideQuantity) {
             is Ok -> when (quantity) {
-                is Ok -> Ok(ShoppingCartItem(productName.value, quantity.value))
+                is Ok -> Ok(provideQuantity.value(quantity.value))
                 is Err -> Err(quantity.message)
             }
 
             is Err -> when (quantity) {
-                is Ok -> Err(productName.message)
-                is Err -> Err(productName.message + "\n" + quantity.message)
+                is Ok -> Err(provideQuantity.message)
+                is Err -> Err(provideQuantity.message + "\n" + quantity.message)
             }
         }
 
