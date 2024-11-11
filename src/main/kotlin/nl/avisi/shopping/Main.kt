@@ -47,7 +47,7 @@ fun main() {
     // Validate the quantity using the value object
     val quantity: Status<Quantity> =
         try {
-            parse(quantityInput)
+            parse(quantityInput) { Quantity.of(it) }
         } catch (e: IllegalArgumentException) {
             Err(e.message!!)
         }
@@ -67,9 +67,9 @@ fun main() {
     }
 }
 
-private fun parse(quantityInput: Status<String>): Status<Quantity> =
+private fun parse(quantityInput: Status<String>, parser: (String) -> Quantity): Status<Quantity> =
     when (quantityInput) {
-        is Ok -> Ok(Quantity.of(quantityInput.value))
+        is Ok -> Ok(parser(quantityInput.value))
         is Err -> Err(quantityInput.message)
     }
 
