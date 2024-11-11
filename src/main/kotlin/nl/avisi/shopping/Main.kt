@@ -41,45 +41,9 @@ fun main() {
     }
 }
 
-private fun <A1, A2, R> curried(function: (A1, A2) -> R): (A1) -> (A2) -> R =
-    { a1: A1 ->
-        { a2: A2 ->
-            function(a1, a2)
-        }
-    }
-
-private fun <T, R> Status<(T) -> R>.apply(argument: Status<T>): Status<R> =
-    when (this) {
-        is Ok -> when (argument) {
-            is Ok -> Ok(this.value(argument.value))
-            is Err -> Err(argument.message)
-        }
-
-        is Err -> when (argument) {
-            is Ok -> Err(message)
-            is Err -> Err(message + "\n" + argument.message)
-        }
-    }
-
-private fun <T, R> Status<T>.map(mapper: (T) -> R): Status<R> =
-    when (this) {
-        is Ok -> Ok(mapper(value))
-        is Err -> Err(message)
-    }
-
-private fun <T, R> Status<T>.flatMap(mapper: (T) -> Status<R>): Status<R> =
-    when (val m = map(mapper)) {
-        is Ok -> m.value
-        is Err -> Err(m.message)
-    }
-
 private fun askWithErrorHandling(question: String): Status<String> =
     try {
         Ok(ask(question))
     } catch (e: IllegalStateException) {
         Err(e.message!!)
     }
-
-sealed interface Status<T>
-data class Ok<T>(val value: T) : Status<T>
-data class Err<T>(val message: String) : Status<T>
