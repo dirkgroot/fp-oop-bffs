@@ -36,7 +36,7 @@ fun main() {
     // Validate the product name using the value object
     val productName: Status<ProductName> =
         try {
-            parse(productNameInput) { ProductName(it) }
+            productNameInput.map { ProductName(it) }
         } catch (e: IllegalArgumentException) {
             Err(e.message!!)
         }
@@ -44,7 +44,7 @@ fun main() {
     // Validate the quantity using the value object
     val quantity: Status<Quantity> =
         try {
-            parse(quantityInput) { Quantity.of(it) }
+            quantityInput.map { Quantity.of(it) }
         } catch (e: IllegalArgumentException) {
             Err(e.message!!)
         }
@@ -64,10 +64,10 @@ fun main() {
     }
 }
 
-private fun <R> parse(status: Status<String>, parser: (String) -> R): Status<R> =
-    when (status) {
-        is Ok -> Ok(parser(status.value))
-        is Err -> Err(status.message)
+private fun <T, R> Status<T>.map(mapper: (T) -> R): Status<R> =
+    when (this) {
+        is Ok -> Ok(mapper(value))
+        is Err -> Err(message)
     }
 
 private fun askWithErrorHandling(question: String): Status<String> =
