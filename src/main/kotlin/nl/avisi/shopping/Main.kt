@@ -54,17 +54,7 @@ fun main() {
         }
 
     val item: Status<ShoppingCartItem> =
-        when (provideQuantity) {
-            is Ok -> when (quantity) {
-                is Ok -> Ok(provideQuantity.value(quantity.value))
-                is Err -> Err(quantity.message)
-            }
-
-            is Err -> when (quantity) {
-                is Ok -> Err(provideQuantity.message)
-                is Err -> Err(provideQuantity.message + "\n" + quantity.message)
-            }
-        }
+        apply(provideQuantity, quantity)
 
     // Check if IO and validation succeeded and print the result
     if (item is Ok) {
@@ -77,6 +67,19 @@ fun main() {
         println(item.message)
     }
 }
+
+private fun apply(provideQuantity: Status<(Quantity) -> ShoppingCartItem>, quantity: Status<Quantity>) =
+    when (provideQuantity) {
+        is Ok -> when (quantity) {
+            is Ok -> Ok(provideQuantity.value(quantity.value))
+            is Err -> Err(quantity.message)
+        }
+
+        is Err -> when (quantity) {
+            is Ok -> Err(provideQuantity.message)
+            is Err -> Err(provideQuantity.message + "\n" + quantity.message)
+        }
+    }
 
 private fun <T, R> Status<T>.map(mapper: (T) -> R): Status<R> =
     when (this) {
