@@ -28,11 +28,11 @@ fun main() {
     val errors = mutableListOf<String>()
 
     // Ask the user for the product name
-    val productNameInput: Status =
+    val productNameInput: Status<String> =
         askWithErrorHandling("Enter product name : ")
 
     // Ask the user for the quantity
-    val quantityInput: Status =
+    val quantityInput: Status<String> =
         askWithErrorHandling("Enter quantity     : ")
 
     // Validate the product name using the value object
@@ -79,13 +79,13 @@ fun main() {
     }
 }
 
-private fun askWithErrorHandling(question: String): Status =
+private fun askWithErrorHandling(question: String): Status<String> =
     try {
         Ok(ask(question))
     } catch (e: IllegalStateException) {
         Err(e.message!!)
     }
 
-sealed interface Status
-data class Ok(val value: String) : Status
-data class Err(val message: String) : Status
+sealed interface Status<T>
+data class Ok<T>(val value: T) : Status<T>
+data class Err<T>(val message: String) : Status<T>
