@@ -37,14 +37,9 @@ fun main() {
             // Validate the quantity using the value object
             .flatMap { Quantity.of(it) }
 
-    val provideProductName: Status<(ProductName) -> (Quantity) -> ShoppingCartItem> =
-        Ok(curried(::ShoppingCartItem))
-
-    val provideQuantity: Status<(Quantity) -> ShoppingCartItem> =
-        provideProductName.apply(productName)
-
-    val item: Status<ShoppingCartItem> =
-        provideQuantity.apply(quantity)
+    val item = Ok(curried(::ShoppingCartItem))
+        .apply(productName)
+        .apply(quantity)
 
     // Check if IO and validation succeeded and print the result
     if (item is Ok) {
