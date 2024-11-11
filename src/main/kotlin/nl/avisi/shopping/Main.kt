@@ -25,8 +25,6 @@ import nl.avisi.shopping.io.ask
  *   When the user enters an invalid product name or quantity.
  */
 fun main() {
-    val errors = mutableListOf<String>()
-
     // Ask the user for the product name
     val productNameInput: Status<String> =
         askWithErrorHandling("Enter product name : ")
