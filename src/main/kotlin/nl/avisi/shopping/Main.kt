@@ -36,18 +36,14 @@ fun main() {
         askWithErrorHandling("Enter quantity     : ")
 
     // Validate the product name using the value object
-    val productName: ProductName? =
+    val productName: Status<ProductName> =
         try {
             when (productNameInput) {
-                is Ok -> ProductName(productNameInput.value)
-                is Err -> {
-                    errors.add(productNameInput.message)
-                    null
-                }
+                is Ok -> Ok(ProductName(productNameInput.value))
+                is Err -> Err(productNameInput.message)
             }
         } catch (e: IllegalArgumentException) {
-            errors.add(e.message!!)
-            null
+            Err(e.message!!)
         }
 
     // Validate the quantity using the value object
@@ -66,8 +62,8 @@ fun main() {
         }
 
     // Check if IO and validation succeeded and print the result
-    if (productName != null && quantity != null) {
-        val item = ShoppingCartItem(productName, quantity)
+    if (productName is Ok && quantity != null) {
+        val item = ShoppingCartItem(productName.value, quantity)
 
         println("SUCCESS!\n")
         println("Product name       : ${item.productName}")
@@ -75,6 +71,7 @@ fun main() {
         println("Shopping cart item : $item")
     } else {
         println("FAILURE!\n")
+        if (productName is Err) println(productName.message)
         println(errors.joinToString("\n"))
     }
 }
