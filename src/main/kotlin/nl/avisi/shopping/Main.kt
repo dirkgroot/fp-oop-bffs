@@ -35,19 +35,11 @@ fun main() {
 
     // Validate the product name using the value object
     val productName: Status<ProductName> =
-        try {
-            productNameInput.flatMap { ProductName.of(it) }
-        } catch (e: IllegalArgumentException) {
-            Err(e.message!!)
-        }
+        productNameInput.flatMap { ProductName.of(it) }
 
     // Validate the quantity using the value object
     val quantity: Status<Quantity> =
-        try {
-            quantityInput.flatMap { Quantity.of(it) }
-        } catch (e: IllegalArgumentException) {
-            Err(e.message!!)
-        }
+        quantityInput.flatMap { Quantity.of(it) }
 
     // Check if IO and validation succeeded and print the result
     if (productName is Ok && quantity is Ok) {
