@@ -68,7 +68,7 @@ fun main() {
     }
 }
 
-private fun apply(function: Status<(Quantity) -> ShoppingCartItem>, argument: Status<Quantity>) =
+private fun <T, R> apply(function: Status<(T) -> R>, argument: Status<T>): Status<R> =
     when (function) {
         is Ok -> when (argument) {
             is Ok -> Ok(function.value(argument.value))
