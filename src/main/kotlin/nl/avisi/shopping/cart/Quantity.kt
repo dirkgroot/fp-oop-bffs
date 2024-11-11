@@ -1,16 +1,18 @@
 package nl.avisi.shopping.cart
 
-data class Quantity(val value: Int) {
-    init {
-        if (value < 1)
-            throw IllegalArgumentException("Quantity must be 1 or more")
-    }
+import nl.avisi.shopping.Err
+import nl.avisi.shopping.Ok
+import nl.avisi.shopping.Status
 
+data class Quantity(val value: Int) {
     companion object {
-        fun of(string: String): Quantity {
+        fun of(string: String): Status<Quantity> {
             val value = string.toIntOrNull()
-                ?: throw IllegalArgumentException("Quantity must be numeric")
-            return Quantity(value)
+            return when {
+                value == null -> Err("Quantity must be numeric")
+                value < 1 -> Err("Quantity must be 1 or more")
+                else -> Ok(Quantity(value))
+            }
         }
     }
 

@@ -44,7 +44,7 @@ fun main() {
     // Validate the quantity using the value object
     val quantity: Status<Quantity> =
         try {
-            quantityInput.map { Quantity.of(it) }
+            quantityInput.flatMap { Quantity.of(it) }
         } catch (e: IllegalArgumentException) {
             Err(e.message!!)
         }
