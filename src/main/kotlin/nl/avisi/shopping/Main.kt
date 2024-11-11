@@ -47,10 +47,7 @@ fun main() {
     // Validate the quantity using the value object
     val quantity: Status<Quantity> =
         try {
-            when (quantityInput) {
-                is Ok -> Ok(Quantity.of(quantityInput.value))
-                is Err -> Err(quantityInput.message)
-            }
+            parse(quantityInput)
         } catch (e: IllegalArgumentException) {
             Err(e.message!!)
         }
@@ -69,6 +66,12 @@ fun main() {
         if (quantity is Err) println(quantity.message)
     }
 }
+
+private fun parse(quantityInput: Status<String>): Status<Quantity> =
+    when (quantityInput) {
+        is Ok -> Ok(Quantity.of(quantityInput.value))
+        is Err -> Err(quantityInput.message)
+    }
 
 private fun askWithErrorHandling(question: String): Status<String> =
     try {
