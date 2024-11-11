@@ -36,7 +36,7 @@ fun main() {
     // Validate the product name using the value object
     val productName: Status<ProductName> =
         try {
-            productNameInput.map { ProductName.of(it) }
+            productNameInput.flatMap { ProductName.of(it) }
         } catch (e: IllegalArgumentException) {
             Err(e.message!!)
         }
@@ -68,6 +68,12 @@ private fun <T, R> Status<T>.map(mapper: (T) -> R): Status<R> =
     when (this) {
         is Ok -> Ok(mapper(value))
         is Err -> Err(message)
+    }
+
+private fun <T, R> Status<T>.flatMap(mapper: (T) -> Status<R>): Status<R> =
+    when (val m = map(mapper)) {
+        is Ok -> m.value
+        is Err -> Err(m.message)
     }
 
 private fun askWithErrorHandling(question: String): Status<String> =
