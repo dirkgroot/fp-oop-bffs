@@ -28,16 +28,23 @@ fun main() {
     val errors = mutableListOf<String>()
 
     // Ask the user for the product name
-    val productNameInput: String? = askWithErrorHandling(errors, "Enter product name : ")
+    val productNameInput: Status =
+        askWithErrorHandling("Enter product name : ")
 
     // Ask the user for the quantity
-    val quantityInput: String? = askWithErrorHandling(errors, "Enter quantity     : ")
+    val quantityInput: Status =
+        askWithErrorHandling("Enter quantity     : ")
 
     // Validate the product name using the value object
     val productName: ProductName? =
         try {
-            if (productNameInput != null) ProductName(productNameInput)
-            else null
+            when (productNameInput) {
+                is Ok -> ProductName(productNameInput.value)
+                is Err -> {
+                    errors.add(productNameInput.message)
+                    null
+                }
+            }
         } catch (e: IllegalArgumentException) {
             errors.add(e.message!!)
             null
@@ -46,8 +53,13 @@ fun main() {
     // Validate the quantity using the value object
     val quantity: Quantity? =
         try {
-            if (quantityInput != null) Quantity.of(quantityInput)
-            else null
+            when (quantityInput) {
+                is Ok -> Quantity.of(quantityInput.value)
+                is Err -> {
+                    errors.add(quantityInput.message)
+                    null
+                }
+            }
         } catch (e: IllegalArgumentException) {
             errors.add(e.message!!)
             null
@@ -67,10 +79,13 @@ fun main() {
     }
 }
 
-private fun askWithErrorHandling(errors: MutableList<String>, question: String): String? =
+private fun askWithErrorHandling(question: String): Status =
     try {
-        ask(question)
+        Ok(ask(question))
     } catch (e: IllegalStateException) {
-        errors.add(e.message!!)
-        null
+        Err(e.message!!)
     }
+
+sealed interface Status
+data class Ok(val value: String) : Status
+data class Err(val message: String) : Status
