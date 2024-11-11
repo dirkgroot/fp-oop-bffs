@@ -36,7 +36,7 @@ fun main() {
     // Validate the product name using the value object
     val productName: Status<ProductName> =
         try {
-            productNameInput.map { ProductName(it) }
+            productNameInput.map { ProductName.of(it) }
         } catch (e: IllegalArgumentException) {
             Err(e.message!!)
         }
