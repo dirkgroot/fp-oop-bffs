@@ -38,11 +38,7 @@ fun main() {
             .flatMap { Quantity.of(it) }
 
     val provideProductName: Status<(ProductName) -> (Quantity) -> ShoppingCartItem> =
-        Ok { pn: ProductName ->
-            { qu: Quantity ->
-                ShoppingCartItem(pn, qu)
-            }
-        }
+        Ok(curried(::ShoppingCartItem))
 
     val provideQuantity: Status<(Quantity) -> ShoppingCartItem> =
         provideProductName.apply(productName)
@@ -61,6 +57,13 @@ fun main() {
         println(item.message)
     }
 }
+
+private fun curried(function: (ProductName, Quantity) -> ShoppingCartItem): (ProductName) -> (Quantity) -> ShoppingCartItem =
+    { pn: ProductName ->
+        { qu: Quantity ->
+            function(pn, qu)
+        }
+    }
 
 private fun <T, R> Status<(T) -> R>.apply(argument: Status<T>): Status<R> =
     when (this) {
