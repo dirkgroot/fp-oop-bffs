@@ -41,10 +41,10 @@ fun main() {
         Err("TODO")
 
     val provideQuantity: Status<(Quantity) -> ShoppingCartItem> =
-        apply(provideProductName, productName)
+        provideProductName.apply(productName)
 
     val item: Status<ShoppingCartItem> =
-        apply(provideQuantity, quantity)
+        provideQuantity.apply(quantity)
 
     // Check if IO and validation succeeded and print the result
     if (item is Ok) {
@@ -58,16 +58,16 @@ fun main() {
     }
 }
 
-private fun <T, R> apply(function: Status<(T) -> R>, argument: Status<T>): Status<R> =
-    when (function) {
+private fun <T, R> Status<(T) -> R>.apply(argument: Status<T>): Status<R> =
+    when (this) {
         is Ok -> when (argument) {
-            is Ok -> Ok(function.value(argument.value))
+            is Ok -> Ok(this.value(argument.value))
             is Err -> Err(argument.message)
         }
 
         is Err -> when (argument) {
-            is Ok -> Err(function.message)
-            is Err -> Err(function.message + "\n" + argument.message)
+            is Ok -> Err(message)
+            is Err -> Err(message + "\n" + argument.message)
         }
     }
 
