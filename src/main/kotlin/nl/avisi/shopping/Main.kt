@@ -68,16 +68,16 @@ fun main() {
     }
 }
 
-private fun apply(provideQuantity: Status<(Quantity) -> ShoppingCartItem>, quantity: Status<Quantity>) =
-    when (provideQuantity) {
-        is Ok -> when (quantity) {
-            is Ok -> Ok(provideQuantity.value(quantity.value))
-            is Err -> Err(quantity.message)
+private fun apply(function: Status<(Quantity) -> ShoppingCartItem>, argument: Status<Quantity>) =
+    when (function) {
+        is Ok -> when (argument) {
+            is Ok -> Ok(function.value(argument.value))
+            is Err -> Err(argument.message)
         }
 
-        is Err -> when (quantity) {
-            is Ok -> Err(provideQuantity.message)
-            is Err -> Err(provideQuantity.message + "\n" + quantity.message)
+        is Err -> when (argument) {
+            is Ok -> Err(function.message)
+            is Err -> Err(function.message + "\n" + argument.message)
         }
     }
 
