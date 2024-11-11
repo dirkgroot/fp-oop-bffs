@@ -38,7 +38,11 @@ fun main() {
             .flatMap { Quantity.of(it) }
 
     val provideProductName: Status<(ProductName) -> (Quantity) -> ShoppingCartItem> =
-        Err("TODO")
+        Ok { pn: ProductName ->
+            { qu: Quantity ->
+                ShoppingCartItem(pn, qu)
+            }
+        }
 
     val provideQuantity: Status<(Quantity) -> ShoppingCartItem> =
         provideProductName.apply(productName)
