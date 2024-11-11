@@ -25,21 +25,9 @@ import nl.avisi.shopping.io.ask
  *   When the user enters an invalid product name or quantity.
  */
 fun main() {
-    val productName: Status<ProductName> =
-        // Ask the user for the product name
-        askWithErrorHandling("Enter product name : ")
-            // Validate the product name using the value object
-            .flatMap { ProductName.of(it) }
-
-    val quantity: Status<Quantity> =
-        // Ask the user for the quantity
-        askWithErrorHandling("Enter quantity     : ")
-            // Validate the quantity using the value object
-            .flatMap { Quantity.of(it) }
-
     val item = Ok(curried(::ShoppingCartItem))
-        .apply(productName)
-        .apply(quantity)
+        .apply(askWithErrorHandling("Enter product name : ").flatMap { ProductName.of(it) })
+        .apply(askWithErrorHandling("Enter quantity     : ").flatMap { Quantity.of(it) })
 
     // Check if IO and validation succeeded and print the result
     if (item is Ok) {
