@@ -37,8 +37,21 @@ fun main() {
             // Validate the quantity using the value object
             .flatMap { Quantity.of(it) }
 
-    val provideQuantity: Status<(Quantity) -> ShoppingCartItem> =
+    val provideProductName: Status<(ProductName) -> (Quantity) -> ShoppingCartItem> =
         Err("TODO")
+
+    val provideQuantity: Status<(Quantity) -> ShoppingCartItem> =
+        when (provideProductName) {
+            is Ok -> when (productName) {
+                is Ok -> Ok(provideProductName.value(productName.value))
+                is Err -> Err(productName.message)
+            }
+
+            is Err -> when (productName) {
+                is Ok -> Err(provideProductName.message)
+                is Err -> Err(provideProductName.message + "\n" + productName.message)
+            }
+        }
 
     val item: Status<ShoppingCartItem> =
         when (provideQuantity) {
