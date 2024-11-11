@@ -37,18 +37,28 @@ fun main() {
             // Validate the quantity using the value object
             .flatMap { Quantity.of(it) }
 
-    // Check if IO and validation succeeded and print the result
-    if (productName is Ok && quantity is Ok) {
-        val item = ShoppingCartItem(productName.value, quantity.value)
+    val item: Status<ShoppingCartItem> =
+        when (productName) {
+            is Ok -> when (quantity) {
+                is Ok -> Ok(ShoppingCartItem(productName.value, quantity.value))
+                is Err -> Err(quantity.message)
+            }
 
+            is Err -> when (quantity) {
+                is Ok -> Err(productName.message)
+                is Err -> Err(productName.message + "\n" + quantity.message)
+            }
+        }
+
+    // Check if IO and validation succeeded and print the result
+    if (item is Ok) {
         println("SUCCESS!\n")
-        println("Product name       : ${item.productName}")
-        println("Quantity           : ${item.quantity}")
-        println("Shopping cart item : $item")
-    } else {
+        println("Product name       : ${item.value.productName}")
+        println("Quantity           : ${item.value.quantity}")
+        println("Shopping cart item : ${item.value}")
+    } else if (item is Err) {
         println("FAILURE!\n")
-        if (productName is Err) println(productName.message)
-        if (quantity is Err) println(quantity.message)
+        println(item.message)
     }
 }
 
